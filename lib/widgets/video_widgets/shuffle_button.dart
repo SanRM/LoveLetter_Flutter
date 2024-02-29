@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:project_a/config/config.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class ShufflePlaylistButton extends StatefulWidget {
@@ -42,8 +43,9 @@ class _ShufflePlaylistButtonState extends State<ShufflePlaylistButton> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(7),
             border: Border.all(
-                width: _buttonIsHover ? 2 : 1,
-                color: Color.fromARGB(255, 97, 139, 255)),
+              width: _buttonIsHover ? 2 : 1,
+              color: enfasisColorLight,
+            ),
             color: _backgroundbuttonColor,
           ),
           duration: const Duration(
@@ -52,11 +54,11 @@ class _ShufflePlaylistButtonState extends State<ShufflePlaylistButton> {
           child: widget.playlistIsShuffle.value
               ? const Icon(
                   Icons.shuffle,
-                  color: Color.fromARGB(255, 255, 255, 255),
+                  color: Colors.white,
                 )
-              : const Icon(
+              : Icon(
                   Icons.shuffle,
-                  color: Color.fromARGB(255, 173, 195, 255),
+                  color: enfasisColorLight,
                 ),
         ),
       ),
@@ -68,15 +70,13 @@ class _ShufflePlaylistButtonState extends State<ShufflePlaylistButton> {
       setState(() {
         widget.playlistIsShuffle.value = false;
         widget.controller.setShuffle(shufflePlaylists: false);
-        _changeBackgroundButtonColor(
-            newColor: const Color.fromARGB(255, 255, 255, 255));
+        _changeBackgroundButtonColor(newColor: Colors.white);
       });
     } else {
       setState(() {
         widget.playlistIsShuffle.value = true;
         widget.controller.setShuffle(shufflePlaylists: true);
-        _changeBackgroundButtonColor(
-            newColor: const Color.fromARGB(255, 173, 195, 255));
+        _changeBackgroundButtonColor(newColor: enfasisColorLight);
       });
     }
   }

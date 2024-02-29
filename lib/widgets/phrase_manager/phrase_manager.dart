@@ -5,6 +5,8 @@ import 'dart:math';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 
+import '../../config/config.dart';
+
 class PhraseManager extends StatelessWidget {
   final double responsiveHeight;
   final ValueNotifier<String> phraseNotifier;
@@ -29,13 +31,13 @@ class PhraseManager extends StatelessWidget {
                   content: Text(
                     'Frase copiada en el portapapeles 🤍',
                     style: TextStyle(
-                      fontFamily: 'goudy',
+                      fontFamily: fontFamily1,
                       fontWeight: FontWeight.bold,
                       fontSize: responsiveHeight / 40,
-                      color: Color.fromARGB(255, 54, 101, 255),
+                      color: enfasisColorDark.withOpacity(0.8),
                     ),
                   ),
-                  backgroundColor: const Color.fromARGB(255, 201, 214, 255),
+                  backgroundColor: enfasisColorLight,
                 );
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
@@ -49,14 +51,14 @@ class PhraseManager extends StatelessWidget {
                 horizontal: responsiveHeight / 40,
               ),
               child: Text(
-                  phrase,
-                  style: TextStyle(
-                    fontFamily: 'goudy',
-                    fontSize: responsiveHeight / 13,
-                    fontWeight: FontWeight.bold,
-                    color: const Color.fromARGB(255, 48, 48, 48),
-                  ),
+                phrase,
+                style: TextStyle(
+                  fontFamily: fontFamily1,
+                  fontSize: responsiveHeight / 13,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 48, 48, 48),
                 ),
+              ),
             ),
           ),
         );
@@ -79,8 +81,7 @@ abstract class GeneratePhrase {
   String generatePhrase() {
     var random = Random();
 
-    String frase =
-        '${sujetos[random.nextInt(sujetos.length)]} ${verbos[random.nextInt(verbos.length)]} ${complementos[random.nextInt(complementos.length)]}';
+    String frase = '${sujetos[random.nextInt(sujetos.length)]} ${verbos[random.nextInt(verbos.length)]} ${complementos[random.nextInt(complementos.length)]}';
 
     return removeDoubleSpaces(frase);
   }
@@ -127,133 +128,26 @@ class GenerateRandomPhraseWithThopic {
 class MotivationPhrase extends GeneratePhrase {
   MotivationPhrase()
       : super(
-          sujetos: [
-            'Tu determinación',
-            'Tu esfuerzo',
-            'Tu perseverancia',
-            'Tu pasión',
-            'Tu coraje',
-            'Tu dedicación',
-            'Tu entusiasmo',
-            'Tu constancia',
-            'Tu entrega',
-            'Tu voluntad',
-            'Tu fuerza de voluntad',
-            'Tu perseverancia',
-          ],
-          verbos: [
-            'te llevará a',
-            'conducirá a',
-            'te guiará a',
-            'te llevará a',
-            'te dirigirá a',
-            'te impulsará a',
-            'te encaminará a',
-          ],
-          complementos: [
-            'grandes logros',
-            'un futuro brillante',
-            'tus metas alcanzadas',
-            'tus sueños',
-            'logros impresionantes',
-            'tus objetivos',
-            'tus metas',
-            'tus sueños',
-            'conquistar tus metas',
-            'un futuro brillante',
-            'alcanzar tus aspiraciones',
-            'un futuro prometedor',
-          ],
+          sujetos: frases['Motivation']!['sujetos']!,
+          verbos: frases['Motivation']!['verbos']!,
+          complementos: frases['Motivation']!['complementos']!,
         );
 }
 
 class KindPhrase extends GeneratePhrase {
   KindPhrase()
       : super(
-          sujetos: [
-            'Mi cariño',
-            'Mi sueño',
-            'Mi inspiración',
-            'Mi luz',
-            'Mi anhelo',
-            'Mi felicidad',
-            'Mi alegría',
-            'Mi motivación',
-            'Mi fuerza',
-          ],
-          verbos: [
-            'existe por',
-            'origina de',
-            'nace de',
-            'emana',
-            'surge de',
-            'proviene de',
-            'florece por',
-            'se nutre de',
-            'se llena de',
-          ],
-          complementos: [
-            'ti',
-            'ti, mi tesoro',
-            'ti, mi todo',
-            'ti, mi amor',
-            'ti, cosita bonita',
-            'ti, mi niña',
-            'ti, mi vida',
-            'tu amor',
-            'tu sonrisa',
-            'tu ser',
-            'tu esencia',
-            'tu calidez',
-            'tu compañía',
-            'tu ternura',
-            'tu dulzura',
-          ],
+          sujetos: frases['Kind']!['sujetos']!,
+          verbos: frases['Kind']!['verbos']!,
+          complementos: frases['Kind']!['complementos']!,
         );
 }
 
 class LovePhrase extends GeneratePhrase {
   LovePhrase()
       : super(
-          sujetos: [
-            'Tu sonrisa',
-            'Tu felicidad',
-            'Tu ternura',
-            'Tu cariño',
-            'Tu amor',
-            'Tu compañía',
-            'Tu calidez',
-            'Tu mirada',
-            'Tu presencia',
-            'Tu esencia',
-            'Tu apoyo',
-            'Tu luz',
-            'Tu ser',
-          ],
-          verbos: [
-            'ilumina',
-            'dulcifica',
-            'endulza',
-            'embellece',
-            'mejora',
-            'alegra',
-            'enriquece',
-            'alumbra',
-            'anima',
-            'contenta',
-            'potencia',
-            'fortalece',
-          ],
-          complementos: [
-            'mi día',
-            'mi vida',
-            'mi mundo',
-            'mi corazón',
-            'mi existencia',
-            'mi universo',
-            'mi ser',
-            'mi realidad',
-            'mis dias',
-          ],
+          sujetos: frases['Love']!['sujetos']!,
+          verbos: frases['Love']!['verbos']!,
+          complementos: frases['Love']!['complementos']!,
         );
 }

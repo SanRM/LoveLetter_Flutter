@@ -1,10 +1,9 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:tinycolor2/tinycolor2.dart';
+
+import '../config/config.dart';
 
 class AppToolTip extends StatefulWidget {
-
   const AppToolTip({required this.child, required this.text, super.key});
 
   final Widget child;
@@ -16,32 +15,30 @@ class AppToolTip extends StatefulWidget {
 
 class _AppToolTipState extends State<AppToolTip> {
 
-  late Color principalColor;
-
   @override
   Widget build(BuildContext context) {
 
     double responsiveHeight = MediaQuery.of(context).size.height;
-    Random random = Random();
-    
-    principalColor = Color.fromRGBO(random.nextInt(100) + 150, random.nextInt(100) + 150, random.nextInt(100) + 150, 148);
 
-    return Tooltip(
-          message: '📄 ${widget.text}',
-          textStyle: TextStyle(
-            fontFamily: 'goudy',
-            fontSize: responsiveHeight / 40,
-            fontWeight: FontWeight.bold,
-            color: principalColor.darken(100),
-          ),
-          decoration: BoxDecoration(
-            color: principalColor.darken(5),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          verticalOffset: responsiveHeight / 28,
-          exitDuration: const Duration(seconds: 1),
-          child: widget.child,
-        );
+    return InkWell(
+      child: Tooltip(
+        enableTapToDismiss: true,
+        message: '📄 ${widget.text}',
+        textStyle: TextStyle(
+          fontFamily: fontFamily1,
+          fontSize: responsiveHeight / 42,
+          fontWeight: FontWeight.bold,
+          color: enfasisColorDark.withOpacity(0.7),
+        ),
+        decoration: BoxDecoration(
+          color: enfasisColorLight.withOpacity(0.6),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        verticalOffset: responsiveHeight / 28,
+        exitDuration: const Duration(seconds: 1),
+        child: widget.child,
+      ),
+    );
     
   }
 }

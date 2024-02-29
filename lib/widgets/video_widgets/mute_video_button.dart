@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
+import '../../config/config.dart';
+
 class MuteVideoButton extends StatefulWidget {
   const MuteVideoButton(
       {required this.videoIsPlayingNotifier,
@@ -44,8 +46,9 @@ class _MuteVideoButtonState extends State<MuteVideoButton> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(7),
                 border: Border.all(
-                    width: _buttonIsHover ? 2 : 1,
-                    color: Color.fromARGB(255, 97, 139, 255)),
+                  width: _buttonIsHover ? 3 : 1,
+                  color: enfasisColorLight,
+                ),
                 color: _backgroundbuttonColor,
               ),
               duration: const Duration(
@@ -54,11 +57,11 @@ class _MuteVideoButtonState extends State<MuteVideoButton> {
               child: videoIsPlaying
                   ? const Icon(
                       Icons.volume_up,
-                      color: Color.fromARGB(255, 255, 255, 255),
+                      color: Colors.white,
                     )
-                  : const Icon(
+                  : Icon(
                       Icons.volume_off,
-                      color: Color.fromARGB(255, 173, 195, 255),
+                      color: enfasisColorLight,
                     ),
             );
           },
@@ -68,17 +71,17 @@ class _MuteVideoButtonState extends State<MuteVideoButton> {
   }
 
   void muteVideo() {
-
     if (widget.videoIsPlayingNotifier.value) {
       widget.controller.mute();
       widget.videoIsPlayingNotifier.value = false;
-      _changeBackgroundButtonColor(newColor: const Color.fromARGB(255, 255, 255, 255));
+      _changeBackgroundButtonColor(
+          newColor: const Color.fromARGB(255, 255, 255, 255));
     } else {
       widget.controller.unMute();
       widget.videoIsPlayingNotifier.value = true;
-      _changeBackgroundButtonColor(newColor: const Color.fromARGB(255, 173, 195, 255));
+      _changeBackgroundButtonColor(
+          newColor: enfasisColorLight);
     }
-
   }
 
   void _changeBackgroundButtonColor({required Color newColor}) =>

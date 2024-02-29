@@ -1,7 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:project_a/widgets/phrase_manager/phrase_manager.dart';
 import 'package:tinycolor2/tinycolor2.dart';
+
+import '../../config/config.dart';
 
 class PhraseTypeButton extends StatefulWidget {
   final String buttonphraseType;
@@ -27,12 +28,12 @@ class PhraseTypeButton extends StatefulWidget {
 
 class _PhraseTypeButtonState extends State<PhraseTypeButton> {
   late Color backgroundColor;
-  late HSLColor hsl;
+  late double iconSize;
 
   @override
   void initState() {
     backgroundColor = widget.buttonColor;
-    hsl = HSLColor.fromColor(widget.buttonColor);
+    iconSize = widget.responsiveHeight / 75;
     super.initState();
   }
 
@@ -51,6 +52,7 @@ class _PhraseTypeButtonState extends State<PhraseTypeButton> {
       },
       onHover: (value) {
         changeButtonColorOnHover(value);
+        changeiconSizeOnHover(value);
       },
       child: AnimatedContainer(
         width: widget.responsiveWidth / 40,
@@ -64,6 +66,7 @@ class _PhraseTypeButtonState extends State<PhraseTypeButton> {
         child: Icon(
           Icons.star_rate_rounded,
           color: widget.buttonColor.darken(20),
+          size: iconSize,
         ),
       ),
     );
@@ -73,7 +76,7 @@ class _PhraseTypeButtonState extends State<PhraseTypeButton> {
     if (value) {
       setState(
         () {
-          backgroundColor = widget.buttonColor.darken(10);
+          backgroundColor = widget.buttonColor.darken(8);
         },
       );
     } else {
@@ -97,14 +100,17 @@ class _PhraseTypeButtonState extends State<PhraseTypeButton> {
   void changePhraseByType() {
     switch (widget.buttonphraseType) {
       case 'love':
-        widget.phraseNotifier.value = GenerateRandomPhraseWithThopic().generateLovePhrase();
+        widget.phraseNotifier.value =
+            GenerateRandomPhraseWithThopic().generateLovePhrase();
         break;
       case 'motivation':
-        widget.phraseNotifier.value = GenerateRandomPhraseWithThopic().generateMotivationPhrase();
+        widget.phraseNotifier.value =
+            GenerateRandomPhraseWithThopic().generateMotivationPhrase();
         break;
       case 'kind':
-        widget.phraseNotifier.value = GenerateRandomPhraseWithThopic().generateKindPhrase();
-        
+        widget.phraseNotifier.value =
+            GenerateRandomPhraseWithThopic().generateKindPhrase();
+
         break;
     }
   }
@@ -114,7 +120,7 @@ class _PhraseTypeButtonState extends State<PhraseTypeButton> {
       content: Text(
         '¡Nueva frase ${renamePhraseType()} ⭐!',
         style: TextStyle(
-          fontFamily: 'goudy',
+          fontFamily: fontFamily1,
           fontWeight: FontWeight.bold,
           fontSize: widget.responsiveHeight / 80,
           color: backgroundColor.darken(50),
@@ -125,5 +131,17 @@ class _PhraseTypeButtonState extends State<PhraseTypeButton> {
     ScaffoldMessenger.of(context)
       ..removeCurrentSnackBar()
       ..showSnackBar(snackBar);
+  }
+
+  void changeiconSizeOnHover(bool value) {
+    if (value) {
+      setState(() {
+        iconSize = widget.responsiveHeight / 60;
+      });
+    } else {
+      setState(() {
+        iconSize = widget.responsiveHeight / 75;
+      });
+    }
   }
 }

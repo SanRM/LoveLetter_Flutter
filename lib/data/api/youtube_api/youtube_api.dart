@@ -1,11 +1,11 @@
 import 'dart:convert';
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+
+import '../../../config/config.dart';
 
 class YoutubeApi {
 
-  //String apiKey = dotenv.env['API_KEY']!;
-  String apiKey = 'AIzaSyBRqdS9lFF3o_nR55Yp1R38Od8qXmENVYo';
+  String apiKey = youtubeApiKey;
   String url = 'https://www.googleapis.com/youtube/v3/';
 
   getVideosIdInPlaylist({required String playListId, int limit = 80}) async {

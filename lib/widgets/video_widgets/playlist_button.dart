@@ -4,6 +4,8 @@ import 'package:project_a/data/api/youtube_api/youtube_api.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
+import '../../config/config.dart';
+
 enum PlaylistType {
   favorite,
   watchLater,
@@ -39,63 +41,34 @@ class PlaylistButton extends StatefulWidget {
 }
 
 class _PlaylistButtonState extends State<PlaylistButton> {
+
   late Color backgroundColor;
-  late HSLColor hsl;
+  late double iconPadding;
 
   @override
   void initState() {
     backgroundColor = widget.buttonColor;
-    hsl = HSLColor.fromColor(widget.buttonColor);
+    iconPadding = widget.responsiveHeight / 60;
     super.initState();
+  }
+
+  getFutureVideosIdInPlaylist() async {
+    return await widget.youtubeApiInstance.getVideosIdInPlaylist(
+      playListId: widget.playlistId,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return phraseTypeButton(context);
-  }
 
-  phraseTypeButton(context) {
     return FutureBuilder(
-      future: getVideosIdInPlaylist(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return PanelWidget(
-            child: InkWell(
-                onTap: () {
-                  widget.actualPlaylist.value = snapshot.data;
-                  widget.notifyParent();
-                  manageShuffle();
-                  showSnackBar(context);
-                  //print('La playlist actual es: ${widget.actualPlaylist.value}');
-                },
-                onHover: (value) {
-                  changeButtonColorOnHover(value);
-                },
-                child: AnimatedContainer(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    color: backgroundColor,
-                  ),
-                  duration: const Duration(
-                    milliseconds: 250,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: buttonIconByPlaylistType(),
-                  ),
-                )),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
+      future: getFutureVideosIdInPlaylist(),
+      builder: (context, snapshot) {
 
         return PanelWidget(
           child: InkWell(
             onTap: () {
-              widget.actualPlaylist.value = snapshot.data;
+              widget.actualPlaylist.value = snapshot.data as List<String>;
               widget.notifyParent();
               manageShuffle();
               showSnackBar(context);
@@ -103,6 +76,7 @@ class _PlaylistButtonState extends State<PlaylistButton> {
             },
             onHover: (value) {
               changeButtonColorOnHover(value);
+              changeIconPaddingOnHover(value);
             },
             child: AnimatedContainer(
               width: double.infinity,
@@ -114,7 +88,7 @@ class _PlaylistButtonState extends State<PlaylistButton> {
                 milliseconds: 250,
               ),
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(iconPadding),
                 child: buttonIconByPlaylistType(),
               ),
             ),
@@ -124,15 +98,8 @@ class _PlaylistButtonState extends State<PlaylistButton> {
     );
   }
 
-  showVideoIndex() async {
-
-    return await widget.videoController.playlistIndex;
-
-  }
-
   void manageShuffle() {
-
-     Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       if (widget.playlistIsShuffle.value) {
         widget.videoController.setShuffle(shufflePlaylists: true);
       } else {
@@ -141,18 +108,12 @@ class _PlaylistButtonState extends State<PlaylistButton> {
     });
   }
 
-  Future getVideosIdInPlaylist() {
-    return widget.youtubeApiInstance.getVideosIdInPlaylist(
-      playListId: widget.playlistId,
-    );
-  }
-
   void showSnackBar(BuildContext context) {
     final snackBar = SnackBar(
       content: Text(
         '¡Reproduciendo playlist ${renameButtonType()} 🤍!',
         style: TextStyle(
-          fontFamily: 'goudy',
+          fontFamily: fontFamily1,
           fontWeight: FontWeight.bold,
           fontSize: widget.responsiveHeight / 40,
           color: backgroundColor.darken(50),
@@ -203,6 +164,18 @@ class _PlaylistButtonState extends State<PlaylistButton> {
     } else {
       setState(() {
         backgroundColor = widget.buttonColor;
+      });
+    }
+  }
+  
+  void changeIconPaddingOnHover(bool value) {
+    if (value) {
+      setState(() {
+        iconPadding = widget.responsiveHeight / 80;
+      });
+    } else {
+      setState(() {
+        iconPadding = widget.responsiveHeight / 60;
       });
     }
   }

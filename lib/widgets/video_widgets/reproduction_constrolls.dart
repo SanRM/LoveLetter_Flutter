@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
+import '../../config/config.dart';
+
 enum ReproductionControllType { next, previous, stop }
 
 class ReproductionVideoButton extends StatefulWidget {
@@ -21,7 +23,7 @@ class ReproductionVideoButton extends StatefulWidget {
 }
 
 class _ReproductionVideoButtonState extends State<ReproductionVideoButton> {
-  final Color _backgroundbuttonColor = const Color.fromARGB(146, 255, 255, 255);
+  final Color _backgroundbuttonColor = Color.fromARGB(146, 255, 255, 255);
   bool _buttonIsHover = false;
   bool buttonIsSelected = false;
   bool videoIsPlaying = true;
@@ -48,8 +50,9 @@ class _ReproductionVideoButtonState extends State<ReproductionVideoButton> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(7),
             border: Border.all(
-                width: _buttonIsHover ? 2 : 1,
-                color: const Color.fromARGB(255, 97, 139, 255)),
+              width: _buttonIsHover ? 3 : 1,
+              color: _buttonIsHover ? enfasisColorLight : Colors.transparent,
+            ),
             color: _backgroundbuttonColor,
           ),
           duration: const Duration(
@@ -62,21 +65,16 @@ class _ReproductionVideoButtonState extends State<ReproductionVideoButton> {
   }
 
   void buttonActionOnTap() {
-
     if (widget.reproductionButtonType == ReproductionControllType.next) {
       playNextVideo();
-
-    } else if (widget.reproductionButtonType == ReproductionControllType.previous) {
+    } else if (widget.reproductionButtonType ==
+        ReproductionControllType.previous) {
       playPreviousVideo();
-
     } else {
-
       if (videoIsPlaying) {
         pauseVideo();
-
       } else {
         resumeVideo();
-
       }
     }
   }
@@ -97,30 +95,26 @@ class _ReproductionVideoButtonState extends State<ReproductionVideoButton> {
 
   void playPreviousVideo() {
     showVideoIndex().then((value) => {
-    
-      if (value == 0){
-        //print('video index: ${value}, la cantidad de videos es: ${widget.playlistLength}'),
-        widget.controller.playVideoAt(widget.playlistLength - 1)
-      } else {
-        widget.controller.previousVideo()
-      }
-    
-    });
+          if (value == 0)
+            {
+              //print('video index: ${value}, la cantidad de videos es: ${widget.playlistLength}'),
+              widget.controller.playVideoAt(widget.playlistLength - 1)
+            }
+          else
+            {widget.controller.previousVideo()}
+        });
   }
 
   void playNextVideo() {
-
-
     showVideoIndex().then((value) => {
-    
-      if (value + 1 == widget.playlistLength){
-        //print('video index: ${value + 1}'),
-        widget.controller.playVideoAt(0)
-      } else {
-        widget.controller.nextVideo()
-      }
-    
-    });
+          if (value + 1 == widget.playlistLength)
+            {
+              //print('video index: ${value + 1}'),
+              widget.controller.playVideoAt(0)
+            }
+          else
+            {widget.controller.nextVideo()}
+        });
   }
 
   showVideoIndex() async {
@@ -128,29 +122,25 @@ class _ReproductionVideoButtonState extends State<ReproductionVideoButton> {
     return playlistIndex;
   }
 
-
   Icon buttonIcon() {
     if (widget.reproductionButtonType == ReproductionControllType.next) {
-      return const Icon(
+      return Icon(
         Icons.skip_next_rounded,
-        color: Color.fromARGB(255, 173, 195, 255),
+        color: enfasisColorLight,
       );
     } else if (widget.reproductionButtonType ==
         ReproductionControllType.previous) {
-      return const Icon(
+      return Icon(
         Icons.skip_previous_rounded,
-        color: Color.fromARGB(255, 173, 195, 255),
+        color: enfasisColorLight,
       );
     } else {
       if (videoIsPlaying) {
-        return const Icon(
-          Icons.pause,
-          color: Color.fromARGB(255, 173, 195, 255),
-        );
+        return Icon(Icons.pause, color: enfasisColorLight);
       } else {
-        return const Icon(
+        return Icon(
           Icons.play_arrow_rounded,
-          color: Color.fromARGB(255, 173, 195, 255),
+          color: enfasisColorLight,
         );
       }
     }

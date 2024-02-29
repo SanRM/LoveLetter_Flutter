@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_flip_card/controllers/flip_card_controllers.dart';
+import 'package:flutter_flip_card/flipcard/gesture_flip_card.dart';
+import 'package:flutter_flip_card/modal/flip_side.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'package:project_a/config/config.dart';
 import 'package:project_a/widgets/video_widgets/adjust_video_volume_button.dart';
 import 'package:project_a/widgets/video_widgets/mute_video_button.dart';
 import 'package:project_a/widgets/panel.dart';
@@ -43,6 +48,15 @@ class _MainAppState extends State<MainApp> {
   final LocalStorage storage = LocalStorage('my_app');
   final YoutubeApi youtubeApi = YoutubeApi();
 
+  final GestureFlipCardController flipCard1Controller =
+      GestureFlipCardController();
+  final GestureFlipCardController flipCard2Controller =
+      GestureFlipCardController();
+  final GestureFlipCardController flipCard3Controller =
+      GestureFlipCardController();
+  final GestureFlipCardController flipCard4Controller =
+      GestureFlipCardController();
+
   @override
   void initState() {
     handleInitialPhraseValue();
@@ -55,9 +69,6 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     double responsiveWidth = MediaQuery.of(context).size.width;
     double responsiveHeight = MediaQuery.of(context).size.height;
-
-    String message =
-        '( ˘ ³˘)🤍 ¡En este día tan especial, quiero expresarte todo el amor y la ternura que siento por ti!. Eres la luz que ilumina mi vida, la razón de mi sonrisa y el latido de mi corazón, cada momento a tu lado es un regalo del cielo, y cada palabra que compartimos es una melodía de amor 🤍(ˆ⌣ˆԅ)ɔ. Te amo más allá de las palabras y deseo que este mensaje te llene de alegría y felicidad. ¡Eres mi todo!';
 
     handleInitialPlaylistValue();
 
@@ -72,9 +83,9 @@ class _MainAppState extends State<MainApp> {
       ),
       home: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('background_images/wp2.jpg'),
+              image: AssetImage(pageBackground),
               repeat: ImageRepeat.repeat,
             ),
           ),
@@ -90,28 +101,34 @@ class _MainAppState extends State<MainApp> {
                     width: responsiveWidth / 5.3,
                     child: Column(
                       children: [
-                        const PanelWidget(
-                          photo: 'decoration_images/deco1.jpeg',
+                        flipCard(
+                          flipCard1Controller: flipCard1Controller,
+                          cardIsActive: true,
+                          cardFrontImage1: cardFrontImage1,
+                          cardBackImage1: cardBackImage1,
                         ),
                         SizedBox(
                           height: responsiveHeight * 0.01,
                         ),
                         PanelWidget(
                           child: Container(
-                            decoration: const BoxDecoration(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(10),
+                              ),
                               image: DecorationImage(
-                                image: AssetImage('background_images/wp4.jpg'),
+                                image: AssetImage(modelBackground),
                                 fit: BoxFit.cover,
                                 opacity: 0.7,
                               ),
                             ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: const ModelViewer(
-                                src: 'assets/scene.glb',
-                                alt: "3D model",
-                              ),
-                            ),
+                            child: model3d != ''
+                                ? ModelViewer(
+                                    src: model3d,
+                                    alt: "3D model",
+                                  )
+                                : Container(),
                           ),
                         ),
                       ],
@@ -131,9 +148,13 @@ class _MainAppState extends State<MainApp> {
                           height: responsiveHeight / 5,
                           child: Row(
                             children: [
-                              const PanelWidget(
-                                  flex: 2,
-                                  photo: 'decoration_images/deco6.jpeg'),
+                              flipCard(
+                                flex: 2,
+                                flipCard1Controller: flipCard2Controller,
+                                cardIsActive: true,
+                                cardFrontImage1: cardFrontImage2,
+                                cardBackImage1: cardBackImage2,
+                              ),
                               SizedBox(
                                 width: responsiveWidth * 0.0001,
                               ),
@@ -173,8 +194,13 @@ class _MainAppState extends State<MainApp> {
                           child: Row(
                             children: [
                               //left panel, this is a model viewer
-                              const PanelWidget(
-                                photo: 'decoration_images/deco7.jpeg',
+
+                              flipCard(
+                                flex: 1,
+                                flipCard1Controller: flipCard3Controller,
+                                cardIsActive: true,
+                                cardFrontImage1: cardFrontImage3,
+                                cardBackImage1: cardBackImage1,
                               ),
 
                               SizedBox(
@@ -183,13 +209,13 @@ class _MainAppState extends State<MainApp> {
                                   children: [
                                     PanelWidget(
                                       child: Container(
-                                        decoration: const BoxDecoration(
-                                          borderRadius: BorderRadius.all(
+                                        decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.all(
                                             Radius.circular(7),
                                           ),
                                           image: DecorationImage(
                                             image: AssetImage(
-                                              'decoration_images/deco5.jpeg',
+                                              bannerImage,
                                             ),
                                             fit: BoxFit.contain,
                                             repeat: ImageRepeat.repeatX,
@@ -228,11 +254,10 @@ class _MainAppState extends State<MainApp> {
                             alignment: Alignment.center,
                             child: TextScroll(
                               message,
-                              selectable: true,
                               style: TextStyle(
                                 fontSize: responsiveHeight / 75,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'goudy',
+                                fontFamily: fontFamily1,
                               ),
                               velocity: const Velocity(
                                 pixelsPerSecond: Offset(25, 0),
@@ -249,9 +274,12 @@ class _MainAppState extends State<MainApp> {
                     child: Column(
                       children: [
                         //top panel
-                        const PanelWidget(
-                          photo: 'decoration_images/deco2.jpeg',
+                        flipCard(
                           flex: 4,
+                          flipCard1Controller: flipCard4Controller,
+                          cardIsActive: true,
+                          cardFrontImage1: cardFrontImage4,
+                          cardBackImage1: cardBackImage4,
                         ),
 
                         SizedBox(
@@ -353,6 +381,39 @@ class _MainAppState extends State<MainApp> {
     );
   }
 
+  Expanded flipCard(
+      {flex = 1,
+      flipCard1Controller,
+      cardIsActive,
+      cardFrontImage1,
+      cardBackImage1}) {
+    return Expanded(
+      flex: flex,
+      child: cardIsActive1
+          ? GestureFlipCard(
+              animationDuration: const Duration(milliseconds: 300),
+              axis: FlipAxis.vertical,
+              controller: flipCard1Controller,
+              enableController: true,
+              frontWidget: PanelWidget(
+                photo: cardFrontImage1,
+                onTap: () {
+                  flipCard1Controller.flipcard();
+                },
+              ),
+              backWidget: PanelWidget(
+                photo: cardBackImage1,
+                onTap: () {
+                  flipCard1Controller.flipcard();
+                },
+              ),
+            )
+          : PanelWidget(
+              photo: cardFrontImage1,
+            ),
+    );
+  }
+
   //1.
   void handleInitialPlaylistValue() {
     if (_actualPlaylist.value.isNotEmpty) {
@@ -365,7 +426,12 @@ class _MainAppState extends State<MainApp> {
   void youtubePlayerInitialConfig() {
     _youtubePlayerController = YoutubePlayerController(
       params: const YoutubePlayerParams(
-          mute: true, color: 'red', loop: true, showVideoAnnotations: false),
+        mute: true,
+        color: 'red',
+        loop: true,
+        showVideoAnnotations: false,
+        interfaceLanguage: 'es',
+      ),
     );
   }
 
@@ -431,7 +497,7 @@ class _MainAppState extends State<MainApp> {
         PlaylistButton(
           responsiveHeight: responsiveHeight,
           youtubeApiInstance: youtubeApi,
-          playlistId: 'PLeTy2N15mY-sH9g20yn4hqtba7siPDrQv&si=EGUnc06sLBHBVQT8',
+          playlistId: playlist1Id,
           playlistType: PlaylistType.favorite,
           buttonColor: const Color.fromARGB(255, 255, 191, 207),
           actualPlaylist: _actualPlaylist,
@@ -444,7 +510,7 @@ class _MainAppState extends State<MainApp> {
         PlaylistButton(
           responsiveHeight: responsiveHeight,
           youtubeApiInstance: youtubeApi,
-          playlistId: 'PLMaXlNzA5SDBuniEPDMz3Hlqsdb8UocIk&si=eyjKJJ8q5d4gzKYt',
+          playlistId: playlist2Id,
           playlistType: PlaylistType.history,
           buttonColor: const Color.fromARGB(255, 191, 226, 255),
           actualPlaylist: _actualPlaylist,
@@ -457,7 +523,7 @@ class _MainAppState extends State<MainApp> {
         PlaylistButton(
           responsiveHeight: responsiveHeight,
           youtubeApiInstance: youtubeApi,
-          playlistId: 'PLMaXlNzA5SDD4wGRvVtcy3O2JKLiQkWkg&si=JSQRL47lmlFYtMgy',
+          playlistId: playlist3Id,
           playlistType: PlaylistType.watchLater,
           buttonColor: const Color.fromARGB(255, 190, 255, 235),
           actualPlaylist: _actualPlaylist,
