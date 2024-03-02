@@ -6,14 +6,11 @@ import 'package:flutter_flip_card/modal/flip_side.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:project_a/config/config.dart';
-import 'package:project_a/widgets/video_widgets/adjust_video_volume_button.dart';
-import 'package:project_a/widgets/video_widgets/mute_video_button.dart';
 import 'package:project_a/widgets/panel.dart';
 import 'package:project_a/widgets/phrase_manager/phrase_manager.dart';
 import 'package:project_a/widgets/tooltip.dart';
 import 'package:project_a/widgets/video_widgets/reproduction_constrolls.dart';
 import 'package:project_a/data/api/youtube_api/youtube_api.dart';
-import 'package:project_a/widgets/video_widgets/shuffle_button.dart';
 import 'package:text_scroll/text_scroll.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
@@ -288,7 +285,7 @@ class _MainAppState extends State<MainApp> {
 
                         SizedBox(
                           width: double.infinity,
-                          height: responsiveHeight / 13,
+                          height: responsiveHeight / 14,
                           child: Row(
                             children: [
                               PanelWidget(
@@ -325,21 +322,28 @@ class _MainAppState extends State<MainApp> {
 
                         SizedBox(
                           width: double.infinity,
-                          height: responsiveHeight / 13,
+                          height: responsiveHeight / 14,
                           child: Row(
                             children: [
                               PanelWidget(
-                                child: MuteVideoButton(
+                                child: ReproductionVideoButton(
+                                  controller: _youtubePlayerController,
+                                  reproductionButtonType:
+                                      ReproductionControllType.mute,
+                                  playlistLength: _actualPlaylist.value.length,
                                   videoIsPlayingNotifier:
                                       _videoIsPlayingNotifier,
-                                  controller: _youtubePlayerController,
                                 ),
                               ),
                               PanelWidget(
-                                child: ShufflePlaylistButton(
+                                child: ReproductionVideoButton(
                                   controller: _youtubePlayerController,
+                                  reproductionButtonType:
+                                      ReproductionControllType.shuffle,
+                                  playlistLength: _actualPlaylist.value.length,
+                                  videoIsPlayingNotifier:
+                                      _videoIsPlayingNotifier,
                                   playlistIsShuffle: _playlistIsShuffle,
-                                  //playlistIsShuffle: _playlistIsShuffle,
                                 ),
                               ),
                             ],
@@ -351,11 +355,27 @@ class _MainAppState extends State<MainApp> {
                         ),
 
                         PanelWidget(
-                          child: AjustVideoVolumeButton(
-                            videoIsPlayingNotifier: _videoIsPlayingNotifier,
+                          child: ReproductionVideoButton(
                             controller: _youtubePlayerController,
+                            reproductionButtonType:  ReproductionControllType.volume,
+                            playlistLength: _actualPlaylist.value.length,
+                            videoIsPlayingNotifier: _videoIsPlayingNotifier,
                           ),
                         ),
+
+                        SizedBox(
+                          height: responsiveHeight * 0.01,
+                        ),
+
+                        PanelWidget(
+                          child: ReproductionVideoButton(
+                            controller: _youtubePlayerController,
+                            reproductionButtonType:
+                                ReproductionControllType.home,
+                            playlistLength: _actualPlaylist.value.length,
+                          ),
+                        ),
+
                         SizedBox(
                           height: responsiveHeight * 0.01,
                         ),
@@ -363,7 +383,7 @@ class _MainAppState extends State<MainApp> {
                         //bottom panel
                         SizedBox(
                           width: double.infinity,
-                          height: responsiveHeight / 13,
+                          height: responsiveHeight / 14,
                           child: playlistButtons(
                             responsiveWidth,
                             responsiveHeight,

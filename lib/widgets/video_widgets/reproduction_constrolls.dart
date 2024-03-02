@@ -3,19 +3,22 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import '../../config/config.dart';
 
-enum ReproductionControllType { next, previous, stop }
+enum ReproductionControllType { next, previous, stop, home, mute, shuffle, volume }
 
 class ReproductionVideoButton extends StatefulWidget {
   const ReproductionVideoButton(
       {required this.controller,
       required this.reproductionButtonType,
       required this.playlistLength,
+      this.videoIsPlayingNotifier,
+      this.playlistIsShuffle,
       super.key});
 
   final YoutubePlayerController controller;
   final ReproductionControllType reproductionButtonType;
+  final ValueNotifier<bool>? videoIsPlayingNotifier;
+  final ValueNotifier<bool>? playlistIsShuffle;
   final int playlistLength;
-  //final Function() onTap;
 
   @override
   State<ReproductionVideoButton> createState() =>
@@ -23,10 +26,11 @@ class ReproductionVideoButton extends StatefulWidget {
 }
 
 class _ReproductionVideoButtonState extends State<ReproductionVideoButton> {
-  final Color _backgroundbuttonColor = Color.fromARGB(146, 255, 255, 255);
+
   bool _buttonIsHover = false;
-  bool buttonIsSelected = false;
-  bool videoIsPlaying = true;
+  bool _videoIsPlaying = true;
+  Color _backgroundbuttonColor = const Color.fromARGB(146, 255, 255, 255);
+  double _currentVideoVolume = 20.0;
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +39,12 @@ class _ReproductionVideoButtonState extends State<ReproductionVideoButton> {
       child: InkWell(
         onTap: () {
           buttonActionOnTap();
-          //widget.onTap();
         },
         onHover: (value) {
           if (value) {
             _changeIfButtonIsHover(state: true);
-            //print('hovering');
           } else {
             _changeIfButtonIsHover(state: false);
-            //print('not hovering');
           }
         },
         child: AnimatedContainer(
@@ -65,56 +66,206 @@ class _ReproductionVideoButtonState extends State<ReproductionVideoButton> {
   }
 
   void buttonActionOnTap() {
-    if (widget.reproductionButtonType == ReproductionControllType.next) {
-      playNextVideo();
-    } else if (widget.reproductionButtonType ==
-        ReproductionControllType.previous) {
-      playPreviousVideo();
-    } else {
-      if (videoIsPlaying) {
-        pauseVideo();
-      } else {
-        resumeVideo();
-      }
+    switch (widget.reproductionButtonType) {
+      case ReproductionControllType.next:
+        _playNextVideo();
+        break;
+
+      case ReproductionControllType.previous:
+        _playPreviousVideo();
+        break;
+
+      case ReproductionControllType.home:
+        _homeVideo();
+        break;
+
+      case ReproductionControllType.mute:
+        _muteVideo();
+        break;
+
+      case ReproductionControllType.shuffle:
+        _shufflePlaylist();
+        break;
+
+      default:
+        _playOrPauseVideo();
     }
+  }
+
+  Widget buttonIcon() {
+    switch (widget.reproductionButtonType) {
+      case ReproductionControllType.next:
+        return _nextVideoIcon();
+
+      case ReproductionControllType.previous:
+        return _previousVideoIcon();
+
+      case ReproductionControllType.mute:
+        return _muteVideoIcon();
+
+      case ReproductionControllType.home:
+        return _homeVideoIcon();
+
+      case ReproductionControllType.shuffle:
+        return _shufflePlaylistIcon();
+
+      case ReproductionControllType.volume:
+        return _adjustVolumeIcon();
+
+      default:
+        return _pausAndPlayButton();
+    }
+  }
+
+  Icon _pausAndPlayButton() {
+    if (_videoIsPlaying) {
+      return Icon(Icons.pause, color: enfasisColorLight);
+    } else {
+      return Icon(
+        Icons.play_arrow_rounded,
+        color: enfasisColorLight,
+      );
+    }
+  }
+
+  Icon _homeVideoIcon() {
+    return Icon(
+      Icons.home_filled,
+      color: enfasisColorLight,
+    );
+  }
+
+  ValueListenableBuilder<bool> _muteVideoIcon() {
+    return ValueListenableBuilder<bool>(
+      valueListenable: widget.videoIsPlayingNotifier!,
+      builder: (context, videoIsPlaying, child) {
+        if (videoIsPlaying) {
+          Future.delayed(Duration.zero, () {
+            _changeBackgroundButtonColor(newColor: enfasisColorLight);
+          });
+          return const Icon(
+            Icons.volume_up,
+            color: Colors.white,
+          );
+        } else {
+          Future.delayed(Duration.zero, () {
+            _changeBackgroundButtonColor(newColor: Colors.white);
+          });
+          return Icon(
+            Icons.volume_off,
+            color: enfasisColorLight,
+          );
+        }
+      },
+    );
+  }
+
+  ValueListenableBuilder<bool> _shufflePlaylistIcon() {
+    return ValueListenableBuilder<bool>(
+      valueListenable: widget.playlistIsShuffle!,
+      builder: (context, videoIsPlaying, child) {
+        if (videoIsPlaying) {
+          Future.delayed(Duration.zero, () {
+            _changeBackgroundButtonColor(newColor: enfasisColorLight);
+          });
+          return const Icon(
+            Icons.shuffle,
+            color: Colors.white,
+          );
+        } else {
+          Future.delayed(Duration.zero, () {
+            _changeBackgroundButtonColor(newColor: Colors.white);
+          });
+          return Icon(
+            Icons.shuffle,
+            color: enfasisColorLight,
+          );
+        }
+      },
+    );
+  }
+
+  Icon _previousVideoIcon() {
+    return Icon(
+      Icons.skip_previous_rounded,
+      color: enfasisColorLight,
+    );
+  }
+
+  Icon _nextVideoIcon() {
+    return Icon(
+      Icons.skip_next_rounded,
+      color: enfasisColorLight,
+    );
+  }
+
+  Widget _adjustVolumeIcon() {
+    return ValueListenableBuilder<bool>(
+        valueListenable: widget.videoIsPlayingNotifier!,
+        builder: (context, videoIsPlaying, child) {
+          return Slider(
+            value: _currentVideoVolume,
+            min: 0,
+            max: 100,
+            thumbColor:  const Color.fromARGB(255, 150, 178, 255),
+            activeColor: const Color.fromARGB(255, 141, 213, 255),
+            inactiveColor: const Color.fromARGB(255, 241, 193, 255),
+            onChanged: videoIsPlaying ? (value) {
+              setState(() {
+                _currentVideoVolume = value;
+              });
+
+              widget.controller.setVolume(
+                _currentVideoVolume.toInt(),
+              );
+
+              if (_currentVideoVolume > 0) {
+                widget.controller.unMute();
+                //widget.videoIsPlayingNotifier.value = true;
+              } else {
+                widget.controller.mute();
+                //widget.videoIsPlayingNotifier.value = false; 
+              }
+            } : null,
+          );
+        },
+      );
   }
 
   void resumeVideo() {
     setState(() {
-      videoIsPlaying = true;
+      _videoIsPlaying = true;
     });
     widget.controller.playVideo();
   }
 
   void pauseVideo() {
     setState(() {
-      videoIsPlaying = false;
+      _videoIsPlaying = false;
     });
     widget.controller.pauseVideo();
   }
 
-  void playPreviousVideo() {
-    showVideoIndex().then((value) => {
-          if (value == 0)
-            {
-              //print('video index: ${value}, la cantidad de videos es: ${widget.playlistLength}'),
-              widget.controller.playVideoAt(widget.playlistLength - 1)
-            }
-          else
-            {widget.controller.previousVideo()}
-        });
+  void _playPreviousVideo() {
+    showVideoIndex().then(
+      (value) => {
+        if (value == 0)
+          {widget.controller.playVideoAt(widget.playlistLength - 1)}
+        else
+          {widget.controller.previousVideo()}
+      },
+    );
   }
 
-  void playNextVideo() {
-    showVideoIndex().then((value) => {
-          if (value + 1 == widget.playlistLength)
-            {
-              //print('video index: ${value + 1}'),
-              widget.controller.playVideoAt(0)
-            }
-          else
-            {widget.controller.nextVideo()}
-        });
+  void _playNextVideo() {
+    showVideoIndex().then(
+      (value) => {
+        if (value + 1 == widget.playlistLength)
+          {widget.controller.playVideoAt(0)}
+        else
+          {widget.controller.nextVideo()}
+      },
+    );
   }
 
   showVideoIndex() async {
@@ -122,33 +273,46 @@ class _ReproductionVideoButtonState extends State<ReproductionVideoButton> {
     return playlistIndex;
   }
 
-  Icon buttonIcon() {
-    if (widget.reproductionButtonType == ReproductionControllType.next) {
-      return Icon(
-        Icons.skip_next_rounded,
-        color: enfasisColorLight,
-      );
-    } else if (widget.reproductionButtonType ==
-        ReproductionControllType.previous) {
-      return Icon(
-        Icons.skip_previous_rounded,
-        color: enfasisColorLight,
-      );
+  void _homeVideo() {
+    widget.controller.loadVideoById(videoId: 'jfKfPfyJRdk');
+  }
+
+  void _muteVideo() {
+    if (widget.videoIsPlayingNotifier?.value == true) {
+      widget.controller.mute();
+      widget.videoIsPlayingNotifier?.value = false;
     } else {
-      if (videoIsPlaying) {
-        return Icon(Icons.pause, color: enfasisColorLight);
-      } else {
-        return Icon(
-          Icons.play_arrow_rounded,
-          color: enfasisColorLight,
-        );
-      }
+      widget.controller.unMute();
+      widget.videoIsPlayingNotifier?.value = true;
+    }
+  }
+
+  void _playOrPauseVideo() {
+    if (_videoIsPlaying) {
+      pauseVideo();
+    } else {
+      resumeVideo();
+    }
+  }
+
+  void _shufflePlaylist() {
+    if (widget.playlistIsShuffle!.value) {
+      widget.playlistIsShuffle!.value = false;
+      widget.controller.setShuffle(shufflePlaylists: false);
+      _changeBackgroundButtonColor(newColor: Colors.white);
+    } else {
+      widget.playlistIsShuffle!.value = true;
+      widget.controller.setShuffle(shufflePlaylists: true);
+      _changeBackgroundButtonColor(newColor: enfasisColorLight);
     }
   }
 
   void _changeIfButtonIsHover({required bool state}) {
-    setState(() {
-      _buttonIsHover = state;
-    });
+    setState(() => _buttonIsHover = state);
   }
+
+  void _changeBackgroundButtonColor({required Color newColor}) {
+    setState(() => _backgroundbuttonColor = newColor);
+  }
+  
 }

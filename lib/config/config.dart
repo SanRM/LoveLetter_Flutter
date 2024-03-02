@@ -16,7 +16,7 @@ String message =
 
 //2. -----------------------
 //2. Colores de enfasis 
-Color enfasisColor = const Color.fromARGB(255, 0, 17, 255);
+Color enfasisColor = Color.fromARGB(255, 255, 0, 170);
 Color borderColor = const Color.fromARGB(255, 29, 29, 29);
 
 Color enfasisColorLight = enfasisColor.lighten(30);
