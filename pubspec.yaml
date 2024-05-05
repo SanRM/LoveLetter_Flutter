@@ -1,0 +1,41 @@
+name: project_a
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.4.0-116.0.dev <4.0.0"
+
+dependencies:
+  clipboard: ^0.1.3
+  flutter:
+    sdk: flutter
+  flutter_flip_card: ^0.0.5
+  html: ^0.15.4
+  http: ^0.13.6
+  localstorage: ^4.0.1+4
+  model_viewer_plus: ^1.7.0
+  text_scroll: ^0.2.0
+  tinycolor2: ^3.0.1
+  youtube_data_api: ^1.0.4
+  youtube_player_iframe: ^5.0.0
+dev_dependencies:
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    - family: goudy_bookletter_1911
+      fonts:
+        - asset: fonts/goudy_bookletter_1911.otf
+
+  assets:
+    - assets/3dModel/
+    - assets/background_images/
+    - assets/button_icons/
+    - assets/decoration_images/
+    - assets/card1/
+    - assets/card2/
+    - assets/card3/
+    - assets/card4/
