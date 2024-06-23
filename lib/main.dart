@@ -196,7 +196,7 @@ class _MainAppState extends State<MainApp> {
                                 flipCard1Controller: flipCard3Controller,
                                 cardIsActive: true,
                                 cardFrontImage1: cardFrontImage3,
-                                cardBackImage1: cardBackImage1,
+                                cardBackImage1: cardBackImage3,
                               ),
 
                               SizedBox(
